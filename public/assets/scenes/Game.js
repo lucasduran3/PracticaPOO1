@@ -7,6 +7,7 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.level = 1;
+    this.lifes = 3;
     this.score = 0;
   }
 
@@ -18,6 +19,12 @@ export default class Game extends Phaser.Scene {
     });
 
     this.levelText = this.add.text(20, 20, "Level: " + this.level,{
+      fontSize: "16px",
+      fontStyle: "bold",
+      fill: "#FFF"
+    });
+
+    this.lifesText = this.add.text(360,20,"Lifes: " + this.lifes,{
       fontSize: "16px",
       fontStyle: "bold",
       fill: "#FFF"
@@ -52,6 +59,7 @@ export default class Game extends Phaser.Scene {
     );
 
     this.cursors = this.input.keyboard.createCursorKeys();
+    
 
   }
 
@@ -69,8 +77,14 @@ export default class Game extends Phaser.Scene {
     }
 
     if(this.ball.y>=550){
+      this.looseLife();
+    }
+
+    if(this.lifes<=0){
       this.gameOver();
     }
+
+    if(this.ball.y<=50);
   }
 
   scoreIncrement(){
@@ -83,6 +97,8 @@ export default class Game extends Phaser.Scene {
     this.levelText.setText("Level: " + this.level);
     this.score = 0;
     this.scoreText.setText("Score: " + this.score);
+    this.lifes = 3;
+    this.lifesText.setText("Lifes: " + this.lifes);
 
     this.slab.setPosition(400,500);
 
@@ -104,7 +120,7 @@ export default class Game extends Phaser.Scene {
     const letters = '0123456789ABCDEF';
     let color = '#';
     for(let i = 0; i<6; i++){
-      color += letters[Math.floor(Math.random()*12)];
+      color += letters[Math.floor(Math.random()*8)];
     }
     return color;
   }
@@ -122,6 +138,7 @@ export default class Game extends Phaser.Scene {
     this.obstacle.setVisible(false);
     this.scoreText.setVisible(false);
     this.levelText.setVisible(false);
+    this.lifesText.setVisible(false);
     this.cameras.main.setBackgroundColor("#0000");
 
     this.gameOverText = this.add.text(280,220, "Game Over",{
@@ -143,6 +160,7 @@ export default class Game extends Phaser.Scene {
     this.obstacle.setVisible(false);
     this.scoreText.setVisible(false);
     this.levelText.setVisible(false);
+    this.lifesText.setVisible(false);
     this.cameras.main.setBackgroundColor("87CFA4");
 
     this.gameWinText = this.add.text(280,220, "Game Win!",{
@@ -155,7 +173,14 @@ export default class Game extends Phaser.Scene {
       fontSize: '20px',
       fill: "#fff",
       align: "center"
-    }).setInteractive().on('pointerdown', () => (this.scene.start("Game")));;
-    
+    }).setInteractive().on('pointerdown', () => (this.scene.start("Game")));;    
+  }
+
+  looseLife(){
+    this.lifes--;
+    this.lifesText.setText("Lifes: " + this.lifes);
+
+    this.ball.setPosition(400,20);
+    this.slab.setPosition(400,500);
   }
 }
