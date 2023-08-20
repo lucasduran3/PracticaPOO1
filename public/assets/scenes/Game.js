@@ -5,10 +5,12 @@ export default class Game extends Phaser.Scene {
 
   }
 
-  init() {
-    this.level = 1;
+  init(data) {
+    this.level = data.level || 1;
     this.lifes = 3;
     this.score = 0;
+    this.backgroundColor = data.backgroundColor || "#000";
+    this.ballVelocity = data.ballVelocity || 200;
   }
 
   create() {
@@ -40,7 +42,6 @@ export default class Game extends Phaser.Scene {
     this.ball = this.physics.add.sprite(400,10, "ball");
     this.ball.setCollideWorldBounds(true);
     this.ball.setBounce(1);
-    this.ballVelocity = 200;
     this.ball.setVelocity(this.ballVelocity);
 
     this.obstacle = this.physics.add.staticGroup();
@@ -60,7 +61,15 @@ export default class Game extends Phaser.Scene {
 
     this.cursors = this.input.keyboard.createCursorKeys();
     
-
+    if(this.level!=1){
+    for(let i = 0; i<this.level; i++){
+      this.randomObstacleX = Phaser.Math.Between(10,790),
+      this.randomObstacleY = Phaser.Math.Between(80,450),
+      this.randomObstacleScale = Phaser.Math.Between(1,3),
+      this.obstacle.create(this.randomObstacleX, this.randomObstacleY, "obstacle").setScale(this.randomObstacleScale).refreshBody();
+    }
+  }
+    
   }
 
   update() {
@@ -73,7 +82,11 @@ export default class Game extends Phaser.Scene {
     }
 
     if(this.score>=10){
-      this.newLevel();
+      this.scene.start("Game",{
+        level : this.level = this.level + 1,
+        backgroundColor : this.randomColor(),
+        ballVelocity : this.ballVelocity * 1.2,
+      });
     }
 
     if(this.ball.y>=550){
@@ -93,26 +106,6 @@ export default class Game extends Phaser.Scene {
   }
 
   newLevel(){
-    this.level++;
-    this.levelText.setText("Level: " + this.level);
-    this.score = 0;
-    this.scoreText.setText("Score: " + this.score);
-    this.lifes = 3;
-    this.lifesText.setText("Lifes: " + this.lifes);
-
-    this.slab.setPosition(400,500);
-
-    this.ballVelocity = this.ballVelocity * 1.2;
-    this.ball.setPosition(400,10);
-    this.ball.setVelocity(this.ballVelocity);
-
-    this.addObstacle();
-
-    this.cameras.main.setBackgroundColor(this.randomColor());
-
-    if(this.level>=20){
-      this.LevelWin();
-    }
 
   }
 
@@ -123,13 +116,6 @@ export default class Game extends Phaser.Scene {
       color += letters[Math.floor(Math.random()*8)];
     }
     return color;
-  }
-
-  addObstacle(){
-    let randomObstacleX = Phaser.Math.Between(10,790);
-    let randomObstacleY = Phaser.Math.Between(80,450);
-    let randomObstacleScale = Phaser.Math.Between(1,3);
-    this.obstacle.create(randomObstacleX, randomObstacleY, "obstacle").setScale(randomObstacleScale).refreshBody();
   }
 
   gameOver(){
